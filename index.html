@@ -121,7 +121,7 @@
 	  margin-top: 12px;
 	}
 	
-	/* background image layer */
+	/* background image */
 	.options-wrapper::before {
 	  content: "";
 	  position: absolute;
@@ -129,10 +129,19 @@
 	  background-image: var(--quiz-bg);
 	  background-size: cover;
 	  background-position: center;
-	  opacity: 0.22;
 	  filter: blur(2px);
 	  z-index: 0;
 	}
+	
+	/* dark overlay */
+	.options-wrapper::after {
+	  content: "";
+	  position: absolute;
+	  inset: 0;
+	  background: rgba(0, 0, 0, 0.35); /* darkness level */
+	  z-index: 0;
+	}
+
 	
 	/* grid of buttons */
 	.options {
@@ -466,4 +475,5 @@
 </body>
 
 </html>  
+
 

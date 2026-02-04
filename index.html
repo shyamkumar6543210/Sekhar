@@ -113,9 +113,50 @@
 	  margin-bottom: 16px;
 	}
 
+	.options-wrapper {
+	  position: relative;
+	  padding: 22px;
+	  border-radius: 22px;
+	  overflow: hidden;
+	  margin-top: 12px;
+	}
+	
+	/* background image layer */
+	.options-wrapper::before {
+	  content: "";
+	  position: absolute;
+	  inset: 0;
+	  background-image: var(--quiz-bg);
+	  background-size: cover;
+	  background-position: center;
+	  opacity: 0.22;
+	  filter: blur(2px);
+	  z-index: 0;
+	}
+	
+	/* grid of buttons */
 	.options {
+	  position: relative;
+	  z-index: 1;
 	  display: grid;
-	  gap: 12px;
+	  gap: 14px;
+	}
+	
+	/* buttons on image */
+	.options button {
+	  background: rgba(255, 255, 255, 0.92);
+	  backdrop-filter: blur(2px);
+	}
+	
+	/* feedback text below buttons */
+	.feedback {
+	  position: relative;
+	  z-index: 1;
+	  margin-top: 14px;
+	  font-size: 14px;
+	  opacity: 0.85;
+	  text-align: center;
+	  animation: pop 0.3s ease;
 	}
 
 	.options button {
@@ -171,37 +212,6 @@
 	  overflow: hidden;
 	}
 
-	/* Quiz options with background photo */
-	.options.with-photo {
-	  position: relative;
-	  padding: 18px;
-	  border-radius: 18px;
-	  overflow: hidden;
-	}
-	
-	/* Background photo layer */
-	.options.with-photo::before {
-	  content: "";
-	  position: absolute;
-	  inset: 0;
-	  background-image: var(--quiz-bg);
-	  background-size: cover;
-	  background-position: center;
-	  opacity: 0.22;        /* makes image light */
-	  filter: blur(2px);   /* soft blur */
-	  z-index: 0;
-	}
-	
-	/* Keep buttons readable on top */
-	.options.with-photo button,
-	.options.with-photo .remember {
-	  position: relative;
-	  z-index: 1;
-	  background: rgba(255, 255, 255, 0.92);
-	  backdrop-filter: blur(2px);
-	}
-
-
     @keyframes pop {
       from { transform: scale(.96); opacity: 0; }
       to { transform: scale(1); opacity: 1; }
@@ -246,7 +256,10 @@
 	<!-- QUIZ SECTION -->
 	<section class="quiz" id="quiz" style="display:none;">
 		<h2 id="question"></h2>
-		<div class="options" id="options"></div>
+		<div class="options-wrapper">
+		  <div class="options" id="options"></div>
+		  <div class="feedback" id="feedback"></div>
+		</div>
 	</section>
 
     <div class="hint" id="hint">That ‘No’ button looks scared 😈</div>
@@ -258,6 +271,7 @@
   </main>
 
   <script>
+	const feedbackEl = document.getElementById("feedback");
     const zone = document.getElementById("zone");
     const yesBtn = document.getElementById("yesBtn");
     const noBtn = document.getElementById("noBtn");
@@ -400,44 +414,37 @@
 	  const q = quizData[currentQ];
 	  questionEl.textContent = q.q;
 	  optionsEl.innerHTML = "";
+	  feedbackEl.innerHTML = "";
 
-	  if (q.bg) {
-	    optionsEl.classList.add("with-photo");
-	    optionsEl.style.setProperty("--quiz-bg", `url('${q.bg}')`);
-	  } else {
-	    optionsEl.classList.remove("with-photo");
-	    optionsEl.style.removeProperty("--quiz-bg");
-	  }
+	   if (q.bg) {
+		  optionsEl.parentElement.style.setProperty("--quiz-bg", `url('${q.bg}')`);
+		} else {
+		  optionsEl.parentElement.style.removeProperty("--quiz-bg");
+		}
 
 	  q.options.forEach((opt, idx) => {
 		const btn = document.createElement("button");
 		btn.textContent = opt;
 
 		btn.onclick = () => {
-		  // Clear previous messages
-		  const oldNotes = optionsEl.querySelectorAll(".remember");
-		  oldNotes.forEach(n => n.remove());
-		
 		  // ❌ WRONG ANSWER
 		  if (idx !== q.correct) {
-			    const upset = document.createElement("div");
-			    upset.className = "remember";
-			    upset.textContent = wrongMessages[Math.floor(Math.random() * wrongMessages.length)];
-			    optionsEl.appendChild(upset);
-			    btn.style.transform = "scale(0.95)";
-			    setTimeout(() => btn.style.transform = "scale(1)", 150);
+			  feedbackEl.textContent =
+			    wrongMessages[Math.floor(Math.random() * wrongMessages.length)];
 			
-			    return;
-			  }
+			  btn.style.transform = "scale(0.95)";
+			  setTimeout(() => btn.style.transform = "scale(1)", 150);
+			  return;
+			}
+
 			
 			  // ✅ CORRECT ANSWER
 			  [...optionsEl.children].forEach(b => b.disabled = true);
-			  btn.classList.add("correct");
-			
-			  const note = document.createElement("div");
-			  note.className = "remember";
-			  note.textContent = "Yes… that’s one of my favorite memories with you ❤️";
-			  optionsEl.appendChild(note);
+			   btn.classList.add("correct");
+
+			   feedbackEl.textContent =
+				  "Yes… that’s one of my favorite memories with you ❤️";
+
 			
 			  setTimeout(() => {
 			    currentQ++;
@@ -458,12 +465,5 @@
   </script>
 </body>
 
-</html>               
-
-
-
-
-
-
-
+</html>  
 

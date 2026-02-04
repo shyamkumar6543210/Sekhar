@@ -171,6 +171,37 @@
 	  overflow: hidden;
 	}
 
+	/* Quiz options with background photo */
+	.options.with-photo {
+	  position: relative;
+	  padding: 18px;
+	  border-radius: 18px;
+	  overflow: hidden;
+	}
+	
+	/* Background photo layer */
+	.options.with-photo::before {
+	  content: "";
+	  position: absolute;
+	  inset: 0;
+	  background-image: var(--quiz-bg);
+	  background-size: cover;
+	  background-position: center;
+	  opacity: 0.22;        /* makes image light */
+	  filter: blur(2px);   /* soft blur */
+	  z-index: 0;
+	}
+	
+	/* Keep buttons readable on top */
+	.options.with-photo button,
+	.options.with-photo .remember {
+	  position: relative;
+	  z-index: 1;
+	  background: rgba(255, 255, 255, 0.92);
+	  backdrop-filter: blur(2px);
+	}
+
+
     @keyframes pop {
       from { transform: scale(.96); opacity: 0; }
       to { transform: scale(1); opacity: 1; }
@@ -321,6 +352,7 @@
 		  "You slid in so smoothly I forgot the date 😏"
 		],
 		correct: 2
+		bg: "pic1.jpeg"
 	  },
 	  {
 		q: "Where did we enjoy a lot together?",
@@ -331,6 +363,7 @@
 		  "Office"
 		],
 		correct: 2
+		bg: "pic2.jpeg"
 	  },
 	  {
 		q: "Where did we first go out together?",
@@ -341,6 +374,7 @@
 		  "Everywhere except where we planned 😄"
 		],
 		correct: 1
+		bg: "pic3.jpeg"
 	  },
 	  {
 		q: "Who fell first?",
@@ -351,6 +385,7 @@
 		  "Still debating this till date 😏"
 		],
 		correct: 3
+		bg: "pic4.jpeg"
 	  }
 	];
 
@@ -365,6 +400,14 @@
 	  const q = quizData[currentQ];
 	  questionEl.textContent = q.q;
 	  optionsEl.innerHTML = "";
+
+	  if (q.bg) {
+	    optionsEl.classList.add("with-photo");
+	    optionsEl.style.setProperty("--quiz-bg", `url('${q.bg}')`);
+	  } else {
+	    optionsEl.classList.remove("with-photo");
+	    optionsEl.style.removeProperty("--quiz-bg");
+	  }
 
 	  q.options.forEach((opt, idx) => {
 		const btn = document.createElement("button");
@@ -416,6 +459,7 @@
 </body>
 
 </html>               
+
 
 
 
